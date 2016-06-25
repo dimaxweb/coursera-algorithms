@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 class Bracket {
@@ -30,18 +32,43 @@ class check_brackets {
         String text = reader.readLine();
 
         Stack<Bracket> opening_brackets_stack = new Stack<Bracket>();
-        for (int position = 0; position < text.length(); ++position) {
+        int failedPosition  = -1;
+        for (int position = 0; position < text.length();position++) {
             char next = text.charAt(position);
 
             if (next == '(' || next == '[' || next == '{') {
                 // Process opening bracket, write your code here
+                Bracket openingBracket = new Bracket(next,position);
+                opening_brackets_stack.push(openingBracket);
             }
 
             if (next == ')' || next == ']' || next == '}') {
-                // Process closing bracket, write your code here
+                if(!opening_brackets_stack.isEmpty()){
+                    Bracket brOpened = opening_brackets_stack.pop();
+                    if(!brOpened.Match(next)){
+                        failedPosition = position + 1;
+                        break;
+                    }
+                }
+                else{
+                    failedPosition = position+1;
+                    break;
+                }
             }
         }
 
+        if(!opening_brackets_stack.isEmpty() && failedPosition==-1){
+            failedPosition  = opening_brackets_stack.get(0).position+1;
+        }
+
+
+        if(failedPosition!=-1){
+            System.out.println(failedPosition);
+
+        }
+        else{
+            System.out.println("Success");
+        }
         // Printing answer, write your code here
     }
 }
