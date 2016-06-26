@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 
 public class JobQueue {
@@ -25,11 +27,19 @@ public class JobQueue {
         public ThreadItem AssignJob(int jobStartTime,int jobNumber){
 
             if(jobNumber>=items.length && jobNumber%items.length == 0){
-                int i  = items.length;
-                while(i>=0){
-                    MinHeapify(items,i);
-                    i--;
-                }
+
+//                for(int i=0;i<items.length;i++) {
+
+                    //MinHeapify(items,i);
+//                }
+
+                Arrays.sort(items, new Comparator<ThreadItem>() {
+                    @Override
+                    public int compare(ThreadItem o1, ThreadItem o2) {
+                        return o1.startTime  - o2.startTime;
+                    }
+                });
+
             }
 
             int threadIndex = jobNumber % items.length;
@@ -97,15 +107,16 @@ public class JobQueue {
     }
 
     private void writeResponse() {
-//        for (int i = 0; i < jobs.length; ++i) {
-//            out.println(assignedWorker[i] + " " + startTime[i]);
-//        }
+        for (int i = 0; i < jobs.length; ++i) {
+            out.println(assignedWorker[i] + " " + startTime[i]);
+        }
+    }
 
+    private void writeResponse2(){
         for (int i = 0; i < assignedThreads.length; ++i) {
             out.println(assignedThreads[i].threadId + " " +assignedThreads[i].startTime);
         }
     }
-
 
     private void assignJobs2(){
 
@@ -117,6 +128,7 @@ public class JobQueue {
 
         }
     }
+
     private void assignJobs() {
 
         // TODO: replace this code with a faster algorithm.
@@ -126,7 +138,6 @@ public class JobQueue {
 
         for (int i = 0; i < jobs.length; i++) {
             int duration = jobs[i];
-
 
             int bestWorker = 0;
             for (int j = 0; j < numWorkers; ++j) {
@@ -144,7 +155,7 @@ public class JobQueue {
         in = new FastScanner();
         out = new PrintWriter(new BufferedOutputStream(System.out));
         readData();
-        assignJobs2();
+        assignJobs();
         writeResponse();
         out.close();
     }
