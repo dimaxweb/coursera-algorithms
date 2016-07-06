@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 public class JobQueue {
@@ -20,42 +21,76 @@ public class JobQueue {
             for(int i =0;i<len;i++){
                 ThreadItem it = new ThreadItem();
                 it.threadId = i;
+                it.startTime  = 0;
                 items[i] = it;
             }
         }
 
-        public ThreadItem AssignJob(int jobStartTime,int jobNumber){
+        public ThreadItem AssignJob(int jobStartTime){
 
-            if(jobNumber>=items.length && jobNumber%items.length == 0){
+            ThreadItem  item    = items[0];
 
-//                for(int i=0;i<items.length;i++) {
+            ThreadItem itemCopy= new ThreadItem();
+            itemCopy.threadId  = item.threadId;
+            itemCopy.startTime  =item.startTime;
 
-                    //MinHeapify(items,i);
-//                }
+            item.startTime+=jobStartTime;
 
-                Arrays.sort(items, new Comparator<ThreadItem>() {
-                    @Override
-                    public int compare(ThreadItem o1, ThreadItem o2) {
-                        return o1.startTime  - o2.startTime;
-                    }
-                });
+            SiftDown(item,0);
 
-            }
+            return itemCopy;
 
-            int threadIndex = jobNumber % items.length;
-            ThreadItem it = items[threadIndex];
-
-            ThreadItem modified = new ThreadItem();
-            modified.threadId = it.threadId;
-            modified.startTime=it.startTime +  jobStartTime;
-            items[threadIndex] = modified;
-            return it;
         }
 
         public void Swap(int i,int smallest,ThreadItem [] Arr){
             ThreadItem t = Arr[i];
             Arr[i] = Arr[smallest];
             Arr[smallest]  =t;
+        }
+
+        public void SiftDown(ThreadItem item,int index){
+
+            ThreadItem leftItem = null;
+            int left = (2 * index)  + 1;
+            if(left  < items.length){
+                leftItem  = items[left];
+            }
+
+            ThreadItem rightItem = null;
+            int right = (2 * index)  + 2;
+            if(right  < items.length){
+                rightItem  = items[right];
+            }
+
+            int indexSmallest = index;
+            int timeSmallest   = item.startTime;
+
+
+            if(leftItem!=null){
+                if(leftItem.startTime  < timeSmallest || (leftItem.startTime == timeSmallest && leftItem.threadId  < item.threadId) ){
+                    timeSmallest = leftItem.startTime;
+                    indexSmallest  = left;
+                }
+            }
+
+
+            if(rightItem!=null){
+                if(rightItem.startTime  < timeSmallest || (rightItem.startTime == timeSmallest && rightItem.threadId  < item.threadId) ){
+                    timeSmallest = rightItem.startTime;
+                    indexSmallest  = right;
+                }
+            }
+
+            if(item.startTime !=timeSmallest ){
+
+                Swap(index,indexSmallest,items);
+
+                SiftDown(items[indexSmallest],indexSmallest);
+            }
+
+
+
+
         }
 
         private void MinHeapify(ThreadItem [] Arr,int i){
@@ -80,8 +115,8 @@ public class JobQueue {
 
     }
 
-
     private int numWorkers;
+
     private int[] jobs;
 
     private int[] assignedWorker;
@@ -94,7 +129,8 @@ public class JobQueue {
     private ThreadItem [] assignedThreads;
 
     public static void main(String[] args) throws IOException {
-        new JobQueue().solve();
+          //new JobQueue().solve();
+        new JobQueue().solveStressTesting();
     }
 
     private void readData() throws IOException {
@@ -124,7 +160,7 @@ public class JobQueue {
         assignedThreads  = new ThreadItem[jobs.length];
         for(int i = 0; i < jobs.length; i++) {
             int duration = jobs[i];
-            assignedThreads[i] = queque.AssignJob(jobs[i],i);
+            assignedThreads[i] = queque.AssignJob(duration);
 
         }
     }
@@ -151,12 +187,107 @@ public class JobQueue {
         }
     }
 
+    long nextLong(Random rng, long n) {
+        // error checking and 2^x checking removed for simplicity.
+        long bits, val;
+        do {
+            bits = (rng.nextLong() << 1) >>> 1;
+            val = bits % n;
+        } while (bits-val+(n-1) < 0L);
+        return val;
+    }
+
+    public  int randInt(int min, int max) {
+
+        // NOTE: This will (intentionally) not run as written so that folks
+        // copy-pasting have to think about how to initialize their
+        // Random instance.  Initialization of the Random instance is outside
+        // the main scope of the question, but some decent options are to have
+        // a field that is initialized once and then re-used as needed or to
+        // use ThreadLocalRandom (if using at least Java 1.7).
+        Random rand  = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
+    }
+
+    public boolean compareAlgorithms(ThreadItem [] items1,int [] workers,long [] times ){
+
+        boolean isEqual = true;
+        if(items1.length != workers.length || items1.length!=times.length){
+            throw new IllegalArgumentException("Items lenght need to be equal.Items1 length" + items1.length + "Workers length:"+workers.length + "Times length:" + times.length);
+        }
+        for(int i=0;i<items1.length;i++){
+
+            ThreadItem  item = items1[i];
+            if(item.threadId!=workers[i] || item.startTime!=times[i]){
+                isEqual =false;
+                break;
+            }
+
+        }
+
+        return isEqual;
+    }
+
+    public void stressTest(){
+
+        boolean isEqual = true;
+        int numOfIterations = 0;
+
+        while(isEqual){
+
+            int min=1,max = 10;
+            numWorkers = randInt(min,max);
+            int m = randInt(min,max);
+
+            jobs = new int[m];
+
+            for (int i = 0; i < m; ++i) {
+                jobs[i] = randInt(min,max);
+            }
+
+            assignJobs();
+            assignJobs2();
+
+            isEqual = compareAlgorithms(this.assignedThreads,this.assignedWorker,this.startTime);
+
+            numOfIterations ++;
+
+        }
+
+        out.println("Exit on input:");
+        out.println("Num of workers:" + numWorkers);
+        out.println("Jobs length:" + jobs.length);
+        for(int i=0;i<jobs.length;i++){
+            out.print(" " + jobs[i]);
+        }
+
+        out.println("");
+        out.println("Brute force algorithm....");
+        writeResponse();
+        out.println("Priority Queque algorithm....");
+        writeResponse2();
+
+
+    }
+
     public void solve() throws IOException {
         in = new FastScanner();
         out = new PrintWriter(new BufferedOutputStream(System.out));
         readData();
-        assignJobs();
-        writeResponse();
+        assignJobs2();
+        writeResponse2();
+        out.close();
+    }
+
+    public void solveStressTesting(){
+        out = new PrintWriter(new BufferedOutputStream(System.out));
+        stressTest();
+//        writeResponse();
         out.close();
     }
 

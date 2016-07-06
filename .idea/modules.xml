@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/DataStructures/Hashtables/Assignment/Assignment.iml" filepath="$PROJECT_DIR$/DataStructures/Hashtables/Assignment/Assignment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataStructures/PriorityQuequesAndDisjoinSets/Assignment/Assignment1.iml" filepath="$PROJECT_DIR$/DataStructures/PriorityQuequesAndDisjoinSets/Assignment/Assignment1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataStructures/BasicStructures/BasicStructures.iml" filepath="$PROJECT_DIR$/DataStructures/BasicStructures/BasicStructures.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataStructures/BinarySearchTrees/BinarySearchTrees.iml" filepath="$PROJECT_DIR$/DataStructures/BinarySearchTrees/BinarySearchTrees.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DynamicProgramming/DynamicProgramming.iml" filepath="$PROJECT_DIR$/DynamicProgramming/DynamicProgramming.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AlorithmicToolbox/GreedyAlgorithms/GreedyAlgorithms.iml" filepath="$PROJECT_DIR$/AlorithmicToolbox/GreedyAlgorithms/GreedyAlgorithms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DataStructures/Hashtables/Hashtables.iml" filepath="$PROJECT_DIR$/DataStructures/Hashtables/Hashtables.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AlorithmicToolbox/Intoduction/Intoduction.iml" filepath="$PROJECT_DIR$/AlorithmicToolbox/Intoduction/Intoduction.iml" />
+    </modules>
+  </component>
+</project>
