@@ -1,5 +1,3 @@
-package tree_orders;
-
 import java.util.*;
 import java.io.*;
 
@@ -40,11 +38,57 @@ public class tree_orders {
 			}
 		}
 
+
+		public void InOrderRecursive(int index,List<Integer> result){
+
+			if(index == -1) return;
+
+			//left
+			InOrderRecursive(left[index],result);
+
+			result.add(key[index]);
+
+			//right
+			InOrderRecursive(right[index],result);
+		}
+
+		public void PostOrderRecursive(int index,List<Integer> result){
+
+			if(index == -1) return;
+
+			//left
+			PostOrderRecursive(left[index],result);
+
+			//right
+			PostOrderRecursive(right[index],result);
+
+			System.out.print(key[index] + " ");
+
+//			result.add(key[index]);
+		}
+
+		public void PreOrderRecursive(int index,List<Integer> result){
+
+			if(index == -1) return;
+
+
+//			result.add(key[index]);
+			System.out.print(key[index] + " ");
+
+			//left
+			PreOrderRecursive(left[index],result);
+
+			//right
+			PreOrderRecursive(right[index],result);
+
+		}
+
+
 		List<Integer> inOrder() {
 			ArrayList<Integer> result = new ArrayList<Integer>();
-                        // Finish the implementation
-                        // You may need to add a new recursive method to do that
-                        
+
+			InOrderRecursive(0,result);
+
 			return result;
 		}
 
@@ -52,6 +96,7 @@ public class tree_orders {
 			ArrayList<Integer> result = new ArrayList<Integer>();
                         // Finish the implementation
                         // You may need to add a new recursive method to do that
+			PreOrderRecursive(0,result);
                         
 			return result;
 		}
@@ -60,7 +105,7 @@ public class tree_orders {
 			ArrayList<Integer> result = new ArrayList<Integer>();
                         // Finish the implementation
                         // You may need to add a new recursive method to do that
-                        
+            PostOrderRecursive(0,result);
 			return result;
 		}
 	}
@@ -87,7 +132,10 @@ public class tree_orders {
 		TreeOrders tree = new TreeOrders();
 		tree.read();
 		print(tree.inOrder());
-		print(tree.preOrder());
-		print(tree.postOrder());
+		tree.preOrder();
+		System.out.println();
+		tree.postOrder();
+
+
 	}
 }
