@@ -26,16 +26,40 @@ public class JobQueue {
             }
         }
 
-        public ThreadItem AssignJob(int jobStartTime){
+        public ThreadItem AssignJob(int jobStartTime,int i){
+            if(i<items.length){
+
+                ThreadItem itemNext = new ThreadItem();
+                itemNext.threadId = i;
+                itemNext.startTime = 0;
+
+                ThreadItem itemInsert = new ThreadItem();
+                itemInsert.threadId = i;
+                itemInsert.startTime = jobStartTime;
+
+                items[i] = itemInsert;
+
+                return itemNext;
+            }
+
+            if(i==items.length){
+
+                int middle  = items.length/2;
+                for(int k=middle;k>0;k--){
+                    SiftDown(items[k],k);
+//                    for(int e=0;e<items.length;e++){
+//                        System.out.print(items[e].startTime + " ");
+//                    }
+//                    System.out.println("");
+                }
+
+            }
 
             ThreadItem  item    = items[0];
-
             ThreadItem itemCopy= new ThreadItem();
             itemCopy.threadId  = item.threadId;
             itemCopy.startTime  =item.startTime;
-
             item.startTime+=jobStartTime;
-
             SiftDown(item,0);
 
             return itemCopy;
@@ -49,6 +73,8 @@ public class JobQueue {
         }
 
         public void SiftDown(ThreadItem item,int index){
+
+           boolean swap = false;
 
             ThreadItem leftItem = null;
             int left = (2 * index)  + 1;
@@ -65,30 +91,42 @@ public class JobQueue {
             int indexSmallest = index;
             int timeSmallest   = item.startTime;
 
-
             if(leftItem!=null){
-                if(leftItem.startTime  < timeSmallest || (leftItem.startTime == timeSmallest && leftItem.threadId  < item.threadId) ){
+                if(leftItem.startTime  < timeSmallest || (leftItem.startTime==timeSmallest && leftItem.threadId  < item.threadId) ){
                     timeSmallest = leftItem.startTime;
                     indexSmallest  = left;
+                    swap=true;
                 }
             }
 
 
             if(rightItem!=null){
-                if(rightItem.startTime  < timeSmallest || (rightItem.startTime == timeSmallest && rightItem.threadId  < item.threadId) ){
+                if(rightItem.startTime  < timeSmallest || (rightItem.startTime==timeSmallest && rightItem.threadId  < item.threadId) ){
                     timeSmallest = rightItem.startTime;
                     indexSmallest  = right;
+                    swap=true;
                 }
             }
 
-            if(item.startTime !=timeSmallest ){
+            if(swap){
+
+                if((rightItem !=null && leftItem!=null) && (rightItem.startTime == leftItem.startTime)){
+                    if(rightItem.threadId < leftItem.threadId){
+                        timeSmallest = rightItem.startTime;
+                        indexSmallest  = right;
+                    }
+                    else{
+                        timeSmallest = leftItem.startTime;
+                        indexSmallest  = left;
+                    }
+                }
+
+
 
                 Swap(index,indexSmallest,items);
 
                 SiftDown(items[indexSmallest],indexSmallest);
             }
-
-
 
 
         }
@@ -115,6 +153,100 @@ public class JobQueue {
 
     }
 
+
+    public class minHeap {
+        public int size;
+        public int [] mH;
+        public int position;
+        public minHeap(int size){
+            this.size=size;
+            mH = new int [size+1];
+            position = 0;
+        }
+        public void createHeap(int [] arrA){
+            if(arrA.length>0){
+                for(int i=0;i<arrA.length;i++){
+                    insert(arrA[i]);
+                }
+            }
+        }
+
+        public void display(){
+            for(int i=1;i<mH.length;i++){
+                System.out.print(" " + mH[i]);
+            }
+            System.out.println("");
+        }
+
+        public void insert(int x){
+            if(position==0){
+                mH[position+1]=x;
+                position = 2;
+            }else{
+                mH[position++]=x;
+                bubbleUp();
+            }
+        }
+        public void bubbleUp(){
+            int pos = position-1;
+            while(pos>0 && mH[pos/2]>mH[pos]){
+                int y = mH[pos];
+                mH[pos]=mH[pos/2];
+                mH[pos/2] = y;
+                pos = pos/2;
+            }
+        }
+        public int extractMin(){
+            int min = mH[1];
+            mH[1]=mH[position-1];
+            mH[position-1]=0;
+            position--;
+            sinkDown(1);
+            return min;
+        }
+
+        public void sinkDown(int k){int a = mH[k];
+            int smallest =k;
+            if(2*k<position && mH[smallest]>mH[2*k]){
+                smallest = 2*k;
+            }
+            if(2*k+1<position && mH[smallest]>mH[2*k+1]){
+                smallest = 2*k+1;
+            }
+            if(smallest!=k){
+                swap(k,smallest);
+                sinkDown(smallest);
+            }
+
+        }
+        public void swap(int a, int b){
+            //System.out.println("swappinh" + mH[a] + " and " + mH[b]);
+            int temp = mH[a];
+            mH[a] = mH[b];
+            mH[b] = temp;
+        }
+
+//        public static void main(String args[]){
+//            int arrA [] = {3,2,1,7,8,4,10,16,12};
+//            System.out.print("Original Array : ");
+//            for(int i=0;i<arrA.length;i++){
+//                System.out.print("  " + arrA[i]);
+//            }
+//            minHeap m = new minHeap(arrA.length);
+//            System.out.print("\nMin-Heap : ");
+//            m.createHeap(arrA);
+//            m.display();
+//            System.out.print("Extract Min :");
+//            for(int i=0;i<arrA.length;i++){
+//                System.out.print("  " + m.extractMin());
+//            }
+//
+//        }
+
+
+    }
+
+
     private int numWorkers;
 
     private int[] jobs;
@@ -129,8 +261,8 @@ public class JobQueue {
     private ThreadItem [] assignedThreads;
 
     public static void main(String[] args) throws IOException {
-          //new JobQueue().solve();
-        new JobQueue().solveStressTesting();
+        new JobQueue().solve();
+//        new JobQueue().solveStressTesting();
     }
 
     private void readData() throws IOException {
@@ -160,8 +292,7 @@ public class JobQueue {
         assignedThreads  = new ThreadItem[jobs.length];
         for(int i = 0; i < jobs.length; i++) {
             int duration = jobs[i];
-            assignedThreads[i] = queque.AssignJob(duration);
-
+            assignedThreads[i] = queque.AssignJob(duration,i);
         }
     }
 
@@ -251,6 +382,7 @@ public class JobQueue {
             }
 
             assignJobs();
+
             assignJobs2();
 
             isEqual = compareAlgorithms(this.assignedThreads,this.assignedWorker,this.startTime);
