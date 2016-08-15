@@ -57,9 +57,14 @@ public class SetRangeSum {
             v.left = parent;
             parent.right = m;
         }
+
+
         update(parent);
         update(v);
+
+
         v.parent = grandparent;
+
         if (grandparent != null) {
             if (grandparent.left == parent) {
                 grandparent.left = v;
@@ -189,17 +194,39 @@ public class SetRangeSum {
     }
 
     void erase(int x) {
-        // Implement erase yourself
 
+        Vertex deletedVertex;
+        VertexPair v = find(root,x);
+        Vertex newRoot  = v.right;
+        Vertex found = v.left;
+        if(found!=null && found.key == x){
+            root  = newRoot;
+            // Now delete the root
+            if (root!=null && root.left == null) {
+                root = root.right;
+            } else {
+                deletedVertex = root.right;
+                root = root.left;
+                splay(deletedVertex);
+                root.right = deletedVertex;
+            }
+        }
     }
 
     boolean find(int x) {
+
         // Implement find yourself
+        if (root == null) return false;
+
+        VertexPair v = find(root,x);
+
+        if(v!=null && v.left!=null &&  v.left.key == x) return true;
 
         return false;
     }
 
     long sum(int from, int to) {
+
         VertexPair leftMiddle = split(root, from);
         Vertex left = leftMiddle.left;
         Vertex middle = leftMiddle.right;
@@ -207,11 +234,17 @@ public class SetRangeSum {
         middle = middleRight.left;
         Vertex right = middleRight.right;
         long ans = 0;
-        // Complete the implementation of sum
+
+        if(middle!=null){
+            Vertex deepestLeft = middle;
+            ans = deepestLeft.sum;
+        }
+
+
+        merge(merge(left,middle),right);
 
         return ans;
     }
-
 
     public static final int MODULO = 1000000001;
 

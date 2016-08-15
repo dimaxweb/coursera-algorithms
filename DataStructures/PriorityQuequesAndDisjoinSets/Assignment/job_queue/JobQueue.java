@@ -8,7 +8,7 @@ public class JobQueue {
 
     public class ThreadItem{
         public int threadId;
-        public int startTime;
+        public long startTime;
     }
 
     public class PriorityJobQueque {
@@ -39,21 +39,11 @@ public class JobQueue {
 
                 items[i] = itemInsert;
 
+                insert(itemInsert);
+
                 return itemNext;
             }
 
-            if(i==items.length){
-
-                int middle  = items.length/2;
-                for(int k=middle;k>0;k--){
-                    SiftDown(items[k],k);
-//                    for(int e=0;e<items.length;e++){
-//                        System.out.print(items[e].startTime + " ");
-//                    }
-//                    System.out.println("");
-                }
-
-            }
 
             ThreadItem  item    = items[0];
             ThreadItem itemCopy= new ThreadItem();
@@ -70,6 +60,40 @@ public class JobQueue {
             ThreadItem t = Arr[i];
             Arr[i] = Arr[smallest];
             Arr[smallest]  =t;
+        }
+
+        public void insert(ThreadItem item){
+            int  index = items.length - 1;
+            items[index]  = item;
+            bubleUp(item,index);
+        }
+
+        public void bubleUp(ThreadItem item,int index){
+
+
+            if(index!=0) {
+
+                int parentIndex;
+
+                if(index % 2 ==0){
+                    parentIndex  = index/2 - 1;
+                }
+                else {
+                    parentIndex  = index/2;
+                }
+
+                if(parentIndex >= 0){
+                    ThreadItem parent = items[parentIndex];
+
+                    if(item.startTime  < parent.startTime || (item.startTime==parent.startTime && parent.threadId  > item.threadId)){
+                        Swap(index,parentIndex,items);
+                        bubleUp(items[parentIndex],parentIndex);
+                    }
+                }
+
+            }
+
+
         }
 
         public void SiftDown(ThreadItem item,int index){
@@ -89,7 +113,7 @@ public class JobQueue {
             }
 
             int indexSmallest = index;
-            int timeSmallest   = item.startTime;
+            long timeSmallest   = item.startTime;
 
             if(leftItem!=null){
                 if(leftItem.startTime  < timeSmallest || (leftItem.startTime==timeSmallest && leftItem.threadId  < item.threadId) ){
@@ -371,7 +395,7 @@ public class JobQueue {
 
         while(isEqual){
 
-            int min=1,max = 10;
+            int min=0,max = 1000;
             numWorkers = randInt(min,max);
             int m = randInt(min,max);
 
