@@ -6,15 +6,12 @@ public class Reachability {
     public static int [] marked;
 
     private static int reach(ArrayList<Integer>[] adj, int x, int y) {
-        int [] marked = new int[adj.length];
+        marked = new int[adj.length];
         ArrayList<Integer> xEdges = adj[x];
         if(xEdges.contains(y)){
             return 1;
         }
-
         dfs(x,adj);
-
-
         return marked[y];
     }
 
